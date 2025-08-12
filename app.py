@@ -20,8 +20,8 @@ def boiling_point():
 
     print(f"Received lat: {lat}, lon: {lon}, egg_type: {egg_type}")
 
-    # add API key here :]
-    elevation_api_url = "YOUR_API_KEY_HERE"
+    # open elevation API url 
+    elevation_api_url = "https://api.open-elevation.com/api/v1/lookup"
     resp = requests.get(elevation_api_url, params={"locations": f"{lat},{lon}"})
     elevation_data = resp.json()
 
