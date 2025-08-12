@@ -1,0 +1,499 @@
+/* load in font (blocky, titles*/
+@font-face {
+    font-family: 'BarberChop';
+    src: url('../fonts/BarberChop.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* load in font (thinner, more detailed text) */
+@font-face {
+    font-family: 'FuturaHandwritten';
+    src: url('../fonts/FuturaHandwritten.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+h1 {
+    font-family: 'BarberChop', sans-serif;
+    text-align: center;
+    font-size: 3.5rem;
+    color: black;
+    margin-top: 4.5%;  /* font is a little off-center, using this to fix it */ 
+}
+
+h2 {
+    font-family: 'FuturaHandwritten', sans-serif;
+    text-align: center;
+    font-size: 2rem;
+    color: black;
+}
+
+/* title bar */
+.header-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgb(247, 182, 40);
+    z-index: 1000;
+    height: 10vh;
+    display: flex;           
+    align-items: center;
+    justify-content: center;
+}
+
+.top-rectangle h1 {
+    margin: 0;
+}
+
+
+.main-content {
+    background: #ebf5fc;
+    height: calc(100vh);  /* full viewport minus header height */
+    padding-top: 6rem;
+    gap: 1.25rem;
+    justify-content: flex-start;
+    align-items: center;
+    overflow-y: scroll;
+    box-sizing: border-box;
+    
+}
+
+/* Autocomplete styling */
+#autocomplete-container {
+    position: relative;
+    width: 80%;
+    max-width: 400px;
+    margin: 1vh auto;
+    
+}
+
+#location {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+}
+
+/* this doesnt match the location size thing, to be fixed*/
+#suggestions {
+    border: 0.0625rem solid #ccc;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 150px;
+    overflow-y: auto;
+    position: absolute;
+    width: 100%;
+    background: white;
+    z-index: 1000;
+}
+
+#suggestions li {
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+#suggestions li:hover {
+    background-color: #f0f0f0;
+}
+
+/* egg selection assets */
+#egg-type {
+    margin-top: 0vh;
+    width: 20%;
+    margin: 1vh auto;
+    margin-bottom: 2rem;
+}
+
+.egg-option {
+    
+    display: flex;
+    align-items: center;
+    gap: 1vh;
+    margin: 1vh 0;
+    cursor: pointer;
+    user-select: none;
+    font-family: 'FuturaHandwritten', sans-serif;
+    font-size: 1.25rem;
+    z-index: 3000;
+    min-height: 3em; 
+    
+    
+}
+
+.egg-option input[type="radio"] {
+    display: none;
+    
+    
+}
+
+.egg-shape {
+    width: 2.5em;               /* relative width */
+    aspect-ratio: 5 / 7;        /* approximate shape ratio, adjust as needed */
+    background-color: white;
+    border: 0.125em solid #ccc;
+    border-radius: 50% 50% 45% 45%;
+    position: relative;
+    transition: border 0.2s ease;
+    
+}
+
+.egg-shape::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1em;
+    height: 1em;
+    background-color: transparent;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: background-color 0.2s ease;
+    
+}
+
+.egg-option input[type="radio"]:checked + .egg-shape::after {
+    background-color: #FFD700; /* yolk */  
+}
+
+.egg-option:hover .egg-shape {
+    border-color: #999;
+    
+}
+
+
+/* calculate button once options are selected  */
+#calculate-button {
+    font-family: 'FuturaHandwritten', sans-serif;
+    font-size: 1.25rem;
+    background-color: rgb(247, 182, 40);
+    border: none;
+    border-radius: 0.75rem;
+    padding: 0.5rem;
+    box-shadow: 0 0.25rem 0.375rem rgba(0,0,0,0.1);
+    
+} 
+
+#calculate-button:hover {
+    background: rgb(230, 165, 35);
+}
+
+
+/* timer assets */
+.timer-container {
+    font-family: 'FuturaHandwritten', sans-serif;
+    background: #ebf5fc;
+    color: black;
+    text-align: center;
+    min-height: calc(100vh - 10vh); /* full viewport minus header */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0.2rem 2.5rem;
+    font-size: 2rem;
+}
+
+.timer-container h1 {
+    font-size: 3rem;
+    font-family: 'FuturaHandwritten', sans-serif; 
+    
+}
+
+#timer-display {
+    font-family: 'BarberChop', sans-serif;
+    font-size: 6rem;
+    font-weight: bold;
+    letter-spacing: 0.1em;
+    margin: 0;
+}
+
+#start-button {
+    font-family: 'FuturaHandwritten', sans-serif;
+    font-size: 2rem;
+    padding: 0.9375rem 2.5rem;
+    background: rgb(247, 182, 40);
+    border: none;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    box-shadow: 0 0.25rem 0.375rem rgba(0,0,0,0.1);
+    transition: background 0.3s ease;
+    margin-bottom: 2rem;
+}
+
+#start-button:hover {
+    background: rgb(230, 165, 35);
+}
+
+#back-button {
+    font-family: 'FuturaHandwritten', sans-serif;
+    font-size: 1.25rem;
+    color: black;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+
+
+/* 
+
+###                         ###
+###   EGG ANIMATION STUFF   ###
+###                         ###
+
+*/
+
+
+    .egg {
+        width: 120px;
+        height: 160px;
+        background: radial-gradient(ellipse at center, #F6EEDA 60%, #F6EEDA);
+        border-radius: 50% 50% 45% 45% / 60% 60% 40% 40%;
+        position: relative;
+        z-index: 2;
+        
+       
+    }
+
+    .egg-shadow {
+        position: absolute;
+        bottom: -10px;       /* Adjust how far below the egg */
+        left: 50%;
+        transform: translateX(-50%);
+        width: 160px;       /* Width of the shadow */
+        height: 20px;      /* Height of the shadow */
+        background: rgba(0, 0, 0, 0.25);
+        border-radius: 50%;
+        filter: blur(6px);
+        z-index: 1;
+      }
+
+
+    .egg-shadow.hidden {
+        display: none;
+        
+    }
+
+    .egg-move-container {
+        position: relative;
+        width: max-content;
+        margin: 0 auto;
+      }
+      
+      .egg-move-container::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;      /* adjust distance below the egg */
+        left: 50%;
+        transform: translateX(-50%);
+        width: 160px;       /* width of the shadow ellipse */
+        height: 20px;      /* height/thickness of the shadow ellipse */
+        background: rgba(0, 0, 0, 0.2); /* soft black shadow with transparency */
+        border-radius: 50%;
+        filter: blur(6px);  /* soften the edges */
+        z-index: -1;       /* behind the egg */
+      }
+
+    
+
+    .egg-move-active {
+        animation: moveLR 10s ease-in-out infinite;
+        z-index: 2000;
+      }
+
+
+    .egg-rotate {
+        animation: rotate 10s linear infinite; 
+        transform-origin: 50% 60%; 
+        
+      }
+      
+      
+
+    .crack1 {
+        position: relative;
+        top: 14%;
+        left: 19%;
+        width: 2px;
+        height: 15%;
+        background: #999; /* gray for crack line */
+        transform: translateX(-50%) rotate(60deg);
+        border-radius: 1px;
+    }
+
+    .crack2 {
+        position: relative;
+        top: -1%;
+        left: 35%;
+        width: 2px;
+        height: 15%;
+        background: #999; /* gray for crack line */
+        transform: translateX(-50%) rotate(120deg);
+        border-radius: 1px;
+    }
+
+    .crack3 {
+        position: relative;
+        top: -16%;
+        left: 52%;
+        width: 2px;
+        height: 15%;
+        background: #999; /* gray for crack line */
+        transform: translateX(-50%) rotate(60deg);
+        border-radius: 1px;
+    }
+
+    .crack4 {
+        position: relative;
+        top: -31%;
+        left: 68%;
+        width: 2px;
+        height: 15%;
+        background: #999; /* gray for crack line */
+        transform: translateX(-50%) rotate(120deg);
+        border-radius: 1px;
+    }
+
+    .crack5 {
+        position: relative;
+        top: -44%;
+        left: 80%;
+        width: 2px;
+        height: 11%;
+        background: #999; /* gray for crack line */
+        transform: translateX(-50%) rotate(53deg);
+        border-radius: 1px;
+    }
+
+    .triangle {
+      position: relative;
+      left: 50%;
+      top: -80%;
+      transform: translate(-50%, +40%) rotate(180deg);
+      width: 0;
+      height: 0;
+      border-left: 12px solid transparent;
+      border-right: 12px solid transparent;
+      border-bottom: 22px solid #FFC16B;
+    }
+
+    .nostril_left {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 3px;
+        height: 3px;
+        background: black;
+        border-radius: 50%;
+        transform: translate(+80%, +450%);
+        box-shadow: 0 0 5px rgba(255,255,255,0.7);
+    }
+
+    .nostril_right {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 3px;
+        height: 3px;
+        background: black;
+        border-radius: 50%;
+        transform: translate(-190%, +450%);
+        box-shadow: 0 0 5px rgba(255,255,255,0.7);
+    }
+
+    .eye_left {
+        position: relative;
+        left: 12%;
+        top: -38%;
+        width: 30px;
+        height: 30px;
+        background: white;
+        border-radius: 50%;
+        
+        box-shadow: 0 0 5px rgba(255,255,255,0.7);
+    }
+
+    .pupil {
+        position: absolute;
+        left: 27%;
+        top: 27%;
+        width: 16px;
+        height: 16px;
+        background: black;
+        border-radius: 50%;
+        
+        box-shadow: 0 0 5px rgba(255,255,255,0.7);
+    }
+
+    .pupil_highlight {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 8px;
+        height: 8px;
+        background: white;
+        border-radius: 50%;
+        
+        box-shadow: 0 0 5px rgba(255,255,255,0.7);
+    }
+
+    .eye_right {
+        position: relative;
+        left: 54%;
+        top: -45%;
+        width: 30px;
+        height: 30px;
+        background: white;
+        border-radius: 50%;
+        transform: translate(+40%, -60%);
+        box-shadow: 0 0 5px rgba(255,255,255,0.7);
+    }
+
+    .blush_left {
+      position: relative;
+      top: -59%;
+      left: 8%;
+      width: 25px;
+      height: 15px;
+      background-color: pink;
+      border-radius: 50% / 50%;
+      
+    }
+
+    .blush_right {
+      position: relative;
+      top: -67%;
+      left: 74%;
+      width: 25px;
+      height: 15px;
+      background-color: pink;
+      border-radius: 50% / 50%;
+     
+    }
+    
+    /* attempt at egg rotation with little wobble */
+    @keyframes rotate {
+        0%   { transform: rotate(-5deg) translateX(0px) translateY(0px); }
+        2.5% { transform: rotate(-5deg) translateX(0px) translateY(0px); }
+        5% { transform: rotate(20deg) translateX(0px) translateY(0px); }
+        10% { transform: rotate(40deg) translateX(0px) translateY(0px); }
+        25% { transform: rotate(180deg) translateX(0px) translateY(30px); }
+        35% { transform: rotate(320deg) translateX(0px) translateY(0px); }
+        40% { transform: rotate(340deg) translateX(0px) translateY(0px); }
+        45% { transform: rotate(360deg) translateX(0px) translateY(0px); }
+        50% { transform: rotate(370deg) translateX(0px) translateY(0px); } 
+        55% { transform: rotate(340deg) translateX(0px) translateY(0px); }
+        60% { transform: rotate(320deg) translateX(0px) translateY(0px); }
+        75% { transform: rotate(180deg) translateX(0px) translateY(30px); }
+        90% { transform: rotate(40deg) translateX(0px) translateY(0px); }
+        95% { transform: rotate(20deg) translateX(0px) translateY(0px); }
+        97.5% { transform: rotate(0deg) translateX(0px) translateY(0px); }
+        100% { transform: rotate(-5deg) translateX(0px) translateY(0px); }
+    }
+
+    /* egg moving with rotation */ 
+    @keyframes moveLR {
+      0%, 100% { transform: translateX(-100px); }
+      50%      { transform: translateX(100px); }
+    }

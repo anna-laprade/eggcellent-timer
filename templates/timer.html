@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Egg Timer</title>
+         <!--  gets style info from my css sheet  -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    </head>
+
+    <body>
+        <!--  title bar  -->
+        <div class="header-bar">
+            <h1>Eggcellent Timer</h1>
+        </div>
+
+
+        <!--  shows selected egg style and location   -->
+        <main class="main-content timer-container">
+            <h1>Boiling a {{ egg }} egg in {{ city }}</h1>
+
+            <!--  egg animation  -->
+            <div class="egg-move-container">
+                <div class="egg">
+                <div class="crack1"></div>
+        
+                <div class="crack2"></div>
+        
+                <div class="crack3"></div>
+        
+                <div class="crack4"></div>
+        
+                <div class="crack5"></div>
+        
+                <div class = "eye_left">
+                    <div class = "pupil"> 
+                        <div class = "pupil_highlight"> </div>
+                    </div>
+                    
+                </div>
+                <div class = "eye_right"> 
+                    <div class = "pupil"> <div class = "pupil_highlight"> </div></div></div>
+                    
+        
+                <div class = "blush_left"> </div>
+        
+                <div class = "blush_right"> </div>
+        
+                <div class="triangle">
+                    <div class = "nostril_left"></div>
+                    <div class = "nostril_right"></div>
+                </div>
+        
+                </div>
+                <div class="egg-shadow"></div>
+            </div>
+
+
+            <!--  specifies water boiling temperature   -->
+            <p>Water boils at {{ temp }}°F here.</p>
+
+            <!--  displays current time remaining on timer   -->
+            <p id="timer-display">{{ '{:02d}'.format(time // 60) }}:{{ '{:02d}'.format(time % 60) }}</p>
+
+            <!--  button to start timer  -->
+            <button id="start-button">Start Timer</button>
+
+            <!--  allows user to return to index anf select new options  -->
+            <a href="{{ url_for('home') }}" id="back-button">← Boil Another Egg</a>
+        </main>
+
+        <script>
+            const startBtn = document.getElementById('start-button');
+            const timerDisplay = document.getElementById('timer-display');
+            const eggMoveContainer = document.querySelector('.egg-move-container');
+            const eggShadow = document.querySelector('.egg-shadow');
+            const egg = document.querySelector('.egg');   // select the egg div
+            let totalTime = {{ time | default(0) }};
+            let intervalId;
+
+            // formats time for timer into minutes + seconds 
+            function formatTime(s) {
+                const m = Math.floor(s / 60);
+                const sec = s % 60;
+                return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+            }
+
+            // start button that begins timer and starts the egg rolling animation
+            startBtn.addEventListener('click', () => {
+                startBtn.disabled = true;
+                let timeLeft = totalTime;
+
+                // adds rolling/rotating animation classes 
+                eggShadow.classList.add('hidden');
+                eggMoveContainer.classList.add('egg-move-active');  
+                egg.classList.add('egg-rotate');
+
+                intervalId = setInterval(() => {
+                    timerDisplay.textContent = formatTime(timeLeft);
+                    timeLeft--;
+
+                    // timer end behavior 
+                    if (timeLeft < 0) {
+                        clearInterval(intervalId);
+                        timerDisplay.textContent = "🍳 Ready!";
+                        alert("Your egg is done! Enjoy!");
+                        startBtn.disabled = false;
+
+                        // Remove animation classes to stop animation
+                        eggMoveContainer.classList.remove('egg-move-active'); 
+                        egg.classList.remove('egg-rotate');
+                        eggShadow.classList.remove('hidden');
+
+                    }
+                }, 1000);
+            });
+        </script>
+    </body>
+</html>

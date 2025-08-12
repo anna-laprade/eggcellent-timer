@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Eggcellent Timer</title>
+        <!--  gets style info from my css sheet  -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    </head>
+
+
+    <body>
+        <!--  Title bar   -->
+        <div class="header-bar">
+            <h1>Eggcellent Timer</h1>
+        </div>
+
+        <div class="main-content">
+
+            <!--  location enter-er w/autocomplete API  -->
+            <div id="autocomplete-container">
+                <h2>Please select your city :]</h2>
+                <input type="text" id="location" placeholder="Enter a city...">
+                <ul id="suggestions"></ul>
+            </div>
+
+            <!--  Radio buttons w/ egg style choices (soft-boiled, hard-boiled, poached)  -->
+            <h2>Then, choose your egg style!</h2>
+            <fieldset id="egg-type" >
+                <legend style="font-family: 'FuturaHandwritten'; font-size: 24px;">Choose Your Egg</legend>
+                <label class="egg-option">
+                    <input type="radio" name="egg-style" value="soft" checked>
+                    <span class="egg-shape"></span>
+                    <span class="egg-text">Soft-boiled</span>
+                </label>
+                
+                <label class="egg-option">
+                    <input type="radio" name="egg-style" value="hard">
+                    <span class="egg-shape"></span>
+                    <span class="egg-text">Hard-boiled</span>
+                </label>
+                
+                <label class="egg-option">
+                    <input type="radio" name="egg-style" value="poached">
+                    <span class="egg-shape"></span>
+                    <span class="egg-text">Poached</span>
+                </label>
+            </fieldset>
+
+            <!--  Button to use when info added  -->
+                <div style="text-align:center;">
+                    <button id="calculate-button" disabled>Calculate Boil Time</button>
+                </div>
+
+        </div>
+
+
+        <script>
+            const input = document.getElementById("location");
+            const suggestions = document.getElementById("suggestions");
+            const calculateBtn = document.getElementById("calculate-button")
+            const apiKey = "YOUR_API_KEY_HERE"; 
+
+
+            let selectedCity = {
+            name: null,
+            lat: null,
+            lon: null
+            };
+
+            let boilTime = 0; // in seconds
+
+            // gets information from the radio button + stores it 
+            function getSelectedEggType() {
+                const radios = document.querySelectorAll('input[name="egg-style"]');
+                for (const radio of radios) {
+                    if (radio.checked) return radio.value;
+                }
+                return 'soft'; // default fallback
+            }
+
+            // call the boiling point info based on city location/altitude
+            async function sendBoilTimeRequest() {
+                if (!selectedCity.lat || !selectedCity.lon) return;  // no city selected yet
+
+                const eggType = getSelectedEggType();
+                console.log("Sending data:", selectedCity, eggType);
+
+                const response = await fetch("/boiling-point", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        lat: selectedCity.lat,
+                        lon: selectedCity.lon,
+                        egg_type: eggType
+                    })
+                });
+
+                const data = await response.json();
+                const url = `/timer?time=${Math.round(data.boil_time)}&city=${encodeURIComponent(selectedCity.name)}&egg=${eggType}&temp=${Math.round(data.boiling_point)}`;
+                window.location.href = url;
+            }
+
+            // format the time for the timer 
+            function formatTime(seconds) {
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            }
+
+            // start the timer 
+            function startTimer(duration) {
+                let timeLeft = duration;
+                const display = document.getElementById("timer-display");
+                
+                // display message when egg is complete 
+                const interval = setInterval(() => {
+                    display.textContent = formatTime(timeLeft);
+                    if (--timeLeft < 0) {
+                        clearInterval(interval);
+                        alert("Time's up! Your egg is ready 🍳");
+                    
+                        display.textContent = "00:00";
+                    }
+                }, 1000);
+            }
+
+            
+            // call the boil time calculation function once the calculate button is clicked 
+            calculateBtn.addEventListener("click", () => {
+                sendBoilTimeRequest();
+            });
+
+
+            // auto-complete API for the location input 
+            input.addEventListener("input", async () => {
+                const query = input.value.trim();
+                if (query.length < 3) {
+                    suggestions.innerHTML = "";
+                    return;
+                }
+
+                const url = `https://us1.locationiq.com/v1/autocomplete.php?key=${apiKey}&q=${query}&limit=5&format=json`;
+
+                try {
+                    const res = await fetch(url);
+                    const data = await res.json();
+
+                    suggestions.innerHTML = ""; // clear previous
+
+                    data.forEach(place => {
+                        const item = document.createElement("li");
+                        item.textContent = place.display_name;
+                        item.dataset.lat = place.lat;
+                        item.dataset.lon = place.lon;
+
+
+                        // actually select/store city data 
+                        item.addEventListener("click", async () => {
+                            selectedCity.name = place.display_name;
+                            selectedCity.lat = place.lat;
+                            selectedCity.lon = place.lon;
+                            input.value = place.display_name;
+                            suggestions.innerHTML = "";
+                            calculateBtn.disabled = false;
+    
+                        });
+                        suggestions.appendChild(item);
+                    });
+                } catch (err) {
+                    console.error("Autocomplete error:", err);
+                }
+            });
+        </script>  
+    </body>
+</html>

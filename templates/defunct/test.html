@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Location Autocomplete Test</title>
+  <style>
+    ul { border: 1px solid #ccc; max-width: 300px; padding: 0; list-style: none; }
+    li { padding: 8px; cursor: pointer; }
+    li:hover { background: #f0f0f0; }
+  </style>
+</head>
+<body>
+  <h2>City Autocomplete</h2>
+  <input type="text" id="location" placeholder="Enter a city...">
+  <ul id="suggestions"></ul>
+
+  <script>
+    const input = document.getElementById("location");
+    const suggestions = document.getElementById("suggestions");
+    const apiKey = "pk.2e5cdc1c076d44cbfeaa15ceacf3316a"; // your key
+
+    input.addEventListener("input", async () => {
+      const query = input.value.trim();
+      if (query.length < 3) {
+        suggestions.innerHTML = "";
+        return;
+      }
+
+      const url = `https://us1.locationiq.com/v1/autocomplete.php?key=${apiKey}&q=${query}&limit=5&format=json`;
+
+      try {
+        const res = await fetch(url);
+        if (!res.ok) {
+          console.error("API error:", await res.text());
+          return;
+        }
+
+        const data = await res.json();
+        suggestions.innerHTML = "";
+
+        data.forEach(place => {
+          const li = document.createElement("li");
+          li.textContent = place.display_name;
+          li.addEventListener("click", () => {
+            input.value = place.display_name;
+            suggestions.innerHTML = "";
+            console.log("Selected:", place);
+          });
+          suggestions.appendChild(li);
+        });
+      } catch (err) {
+        console.error("Fetch failed:", err);
+      }
+    });
+  </script>
+</body>
+</html>
